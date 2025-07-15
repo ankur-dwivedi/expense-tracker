@@ -48,15 +48,23 @@ This command spins up:
 * Expenses: http://localhost:4000/api/expense
 
 2️⃣ Frontend Setup
+
 1. Navigate to the frontend folder:
 
 ```bash
 cd frontend
 ```
-2. Start the development server using Docker Compose:
+
+2. Create a .env file in the backend directory with the following content:
 
 ```bash
-docker compose up
+API_URL=http://localhost:4000/api
+```
+
+3. Start the development server using Docker Compose:
+
+```bash
+docker compose -f docker-compose.dev.yml up
 ```
 
 🔗 The frontend will be available at: http://localhost:3000

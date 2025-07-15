@@ -1,15 +1,13 @@
-version: "3.8"
+version: "3"
 
 services:
-  react-dev:
+  react-app:
+    container_name: myfrontend
     build:
       context: .
-      dockerfile: Dockerfile.dev
-    container_name: myfrontend
+      dockerfile: Dockerfile
     ports:
-      - "3000:3000" # Host:Container
-    volumes:
-      - .:/app        # Mount current dir to container
-      - /app/node_modules # Prevent overwriting node_modules
-    stdin_open: true
-    tty: true
+      - "3000:3000"
+    env_file:
+      - ./.env
+    restart: always

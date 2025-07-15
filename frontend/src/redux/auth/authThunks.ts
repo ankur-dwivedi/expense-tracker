@@ -6,7 +6,7 @@ export const loginThunk = createAsyncThunk(
   "auth",
   async ({ email, password }: LoginPayload, { rejectWithValue }) => {
     try {
-      const response = await axios.post("http://localhost:4000/api/user/auth", { email, password });
+      const response = await axios.post(`${process.env.API_URL}/user/auth`, { email, password });
       return {
         user: response.data.data,
         accessToken: response.data.data.accessToken,
