@@ -6,9 +6,9 @@ This is a full-stack Expense Tracker application built with **React**, **Node.js
 
 ## 📁 Project Structure
 
-* ├── backend/ # Express backend server
-* ├── frontend/ # React frontend app
-* └── README.md 
+├── backend/ # Express backend server <br>
+├── frontend/ # React frontend app <br>
+└── README.md 
 
 
 ## 🚀 Quick Start
