@@ -35,8 +35,3 @@ frontend/node_modules/
 frontend/build/
 frontend/.env
 frontend/.env.*
-
-# --- Optional: Lock files (if using different managers) ---
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
