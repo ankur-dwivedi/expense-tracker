@@ -3,7 +3,7 @@ import axios from "axios";
 import { Expense } from "./expenseTypes";
 import { RootState } from "../store";
 
-const API_URL = `${process.env.API_URL}/expense`; // adjust as needed
+const API_URL = `${process.env.REACT_APP_API_URL}/expense`; // adjust as needed
 
 export const createExpenseThunk = createAsyncThunk<
   Expense,

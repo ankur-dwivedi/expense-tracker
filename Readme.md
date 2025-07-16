@@ -58,7 +58,7 @@ cd frontend
 2. Create a .env file in the backend directory with the following content:
 
 ```bash
-API_URL=http://localhost:4000/api
+REACT_APP_API_URL=http://localhost:4000/api
 ```
 
 3. Start the development server using Docker Compose:
