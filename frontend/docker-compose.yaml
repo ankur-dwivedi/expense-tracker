@@ -2,7 +2,8 @@ version: "3"
 
 services:
   react-app:
-    container_name: myfrontend
+    image: ankurdwivedi/expensetracker:latest
+    container_name: expensetracker
     build:
       context: .
       dockerfile: Dockerfile
