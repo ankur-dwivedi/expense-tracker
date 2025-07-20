@@ -55,16 +55,20 @@ export const updateExpense = async (data: UpdateData) => {
     .catch((error) => error);
 };
 
-export const updateExpenseStatus = async (data: UpdateData) => {
-  const expense: ExpenseDocument | null = await Expense.findById(
-    data.expenseId
-  );
-  if (!expense) throw generateError("Expense not found");
+export const updateExpenseStatus = async (
+  data: UpdateData
+): Promise<ExpenseDocument> => {
+  const updatedExpense = await Expense.findByIdAndUpdate(
+    data.expenseId,
+    { status: data.status },
+    { new: true }
+  ).populate("userId", "name email");
 
-  expense.status = data.status;
-  await expense.save();
+  if (!updatedExpense) {
+    throw generateError("Expense not found");
+  }
 
-  return expense;
+  return updatedExpense;
 };
 
 export const getAnalyticsService = async (userId?: string, isAdmin = false) => {
