@@ -13,6 +13,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Create .env
+        run: |
+          echo "REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}" > ./frontend/.env
+
       - name: Checkout Code
         uses: actions/checkout@v3
 
