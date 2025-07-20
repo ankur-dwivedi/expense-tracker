@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'frontend/**'
+      - '.github/workflows/deploy-frontend.yaml'
 
 jobs:
   deploy:
@@ -35,5 +36,5 @@ jobs:
             git pull origin main
             cd frontend
             docker pull ankurdwivedi/expensetracker-frontend
-            docker-compose -f docker-compose.prod.yml down
-            docker-compose -f docker-compose.prod.yml up -d --force-recreate --remove-orphans
+            docker-compose -f docker-compose.prod.yaml down
+            docker-compose -f docker-compose.prod.yaml up -d --force-recreate --remove-orphans

@@ -46,7 +46,7 @@ const Dashboard: React.FC = () => {
         <Box sx={{ maxWidth: 1000, mx: "auto", px: 2 }}>
           <Card sx={{ p: 3, mt: 5 }}>
             <Typography variant="h5" gutterBottom>
-              Expenses by Category
+              Expenses by category
             </Typography>
             {analyticsLoading ? (
               <Box display="flex" justifyContent="center" mt={4}>
