@@ -1,9 +1,12 @@
-import { generateError } from "../../utils/error";
 import Expense, { ExpenseDocument } from ".";
 import { STATUS_ENUM } from "./constants";
+import { generateError } from "../../utils/error";
 
 interface Query {
   userId?: string;
+  date?: string;
+  category?: string;
+  status?: (typeof STATUS_ENUM)[number];
 }
 
 interface UpdateData {
@@ -12,13 +15,38 @@ interface UpdateData {
 }
 
 export const create = async (expenseData: ExpenseDocument) => {
-  return Expense.create({ ...expenseData }).then((response) => response);
+  return Expense.create({ ...expenseData });
 };
 
-export const get = async (query: Query) => {
-  return Expense.find({ userId: query.userId })
-    .then((response) => (response ? response : generateError()))
-    .catch((error) => error);
+export const get = async (
+  query: any,
+  pageNum: number,
+  limitNum: number,
+  isAdmin = false
+) => {
+  const skip = (pageNum - 1) * limitNum;
+
+  let expensesQuery = Expense.find(query)
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limitNum);
+
+  if (isAdmin) {
+    expensesQuery = expensesQuery.populate({
+      path: "userId",
+      select: "name email",
+    });
+  }
+
+  const [expenses, totalCount] = await Promise.all([
+    expensesQuery.lean(),
+    Expense.countDocuments(query),
+  ]);
+
+  return {
+    expenses,
+    totalCount,
+  };
 };
 
 export const updateExpense = async (data: UpdateData) => {
@@ -28,20 +56,41 @@ export const updateExpense = async (data: UpdateData) => {
 };
 
 export const updateExpenseStatus = async (data: UpdateData) => {
-  try {
-    const expense: ExpenseDocument | null = await Expense.findById(
-      data.expenseId
-    );
-    if (!expense) throw generateError("Expense not found");
+  const expense: ExpenseDocument | null = await Expense.findById(
+    data.expenseId
+  );
+  if (!expense) throw generateError("Expense not found");
 
-    expense.status = data.status;
-    await expense.save();
+  expense.status = data.status;
+  await expense.save();
 
-    return expense;
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-      throw generateError(err.message || "Failed to update expense status");
-    }
-    throw generateError("Failed to update expense status");
+  return expense;
+};
+
+export const getAnalyticsService = async (userId?: string, isAdmin = false) => {
+  const matchQuery: any = { status: "approved" };
+
+  if (!isAdmin && userId) {
+    matchQuery.userId = userId;
   }
+
+  const result = await Expense.aggregate([
+    { $match: matchQuery },
+    {
+      $group: {
+        _id: "$category",
+        totalAmount: { $sum: "$amount" },
+      },
+    },
+    {
+      $sort: { _id: 1 },
+    },
+  ]);
+
+  const formatted: Record<string, number> = {};
+  for (const entry of result) {
+    formatted[entry._id] = entry.totalAmount;
+  }
+
+  return formatted;
 };

@@ -24,8 +24,14 @@ export const createExpenseThunk = createAsyncThunk<
 });
 
 export const fetchExpensesThunk = createAsyncThunk<
-  Expense[],
-  { category?: string; date?: string },
+  { data: Expense[]; meta: { total: number; page: number } },
+  {
+    category?: string;
+    date?: string;
+    status?: string;
+    page?: number;
+    limit?: number;
+  },
   { state: RootState; rejectValue: string }
 >("expenses/fetch", async (filters, { getState, rejectWithValue }) => {
   try {
@@ -34,7 +40,7 @@ export const fetchExpensesThunk = createAsyncThunk<
       params: filters,
       headers: { Authorization: `Bearer ${token}` },
     });
-    return response.data.data;
+    return { data: response.data.data, meta: response.data.meta };
   } catch (error: any) {
     return rejectWithValue(
       error.response?.data?.message || "Failed to fetch expenses"
@@ -66,3 +72,21 @@ export const updateExpenseStatusThunk = createAsyncThunk<
     }
   }
 );
+
+export const fetchAnalyticsThunk = createAsyncThunk<
+  Record<string, number>,
+  void,
+  { state: RootState; rejectValue: string }
+>("expenses/fetchAnalytics", async (_, { getState, rejectWithValue }) => {
+  try {
+    const token = getState().auth.token;
+    const response = await axios.get(`${API_URL}/analytics`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data.data;
+  } catch (error: any) {
+    return rejectWithValue(
+      error.response?.data?.message || "Failed to fetch analytics"
+    );
+  }
+});

@@ -3,13 +3,14 @@ import {
   create,
   get,
   updateExpenseStatus,
+  getAnalyticsService,
 } from "../../models/expense/services";
 import { UserDocument } from "../../models/user";
-import Expense from "../../models/expense";
 
 interface AuthedRequest extends Request {
   user?: UserDocument;
 }
+
 export const createExpense = async (
   req: Request,
   res: Response
@@ -35,21 +36,19 @@ export const getExpense = async (
 ): Promise<Response> => {
   try {
     const user = (req as AuthedRequest).user;
-    const { category, date } = req.query;
+    const { category, date, status, page = 1, limit = 10 } = req.query;
+
+    const pageNum = parseInt(page as string, 10);
+    const limitNum = parseInt(limit as string, 10);
 
     let query: any = {};
 
-    // If not admin, filter by userId
     if (user && user.role !== "admin") {
       query.userId = user._id;
     }
 
-    // Apply category filter if present
-    if (category) {
-      query.category = category;
-    }
-
-    // Apply date filter if present
+    if (category) query.category = category;
+    if (status) query.status = status;
     if (date) {
       const start = new Date(date as string);
       start.setHours(0, 0, 0, 0);
@@ -58,20 +57,22 @@ export const getExpense = async (
       query.date = { $gte: start, $lte: end };
     }
 
-    let expensesQuery = Expense.find(query);
+    const { expenses, totalCount } = await get(
+      query,
+      pageNum,
+      limitNum,
+      user?.role === "admin"
+    );
 
-    if (user && user.role === "admin") {
-      expensesQuery = expensesQuery.populate({
-        path: "userId",
-        select: "name email",
-      });
-    }
-
-    const expenses = await expensesQuery.lean();
     return res.status(200).json({
       status: "success",
       message: "Fetched expenses successfully",
       data: expenses,
+      meta: {
+        total: totalCount,
+        page: pageNum,
+        totalPages: Math.ceil(totalCount / limitNum),
+      },
     });
   } catch (err: any) {
     return res.status(500).json({
@@ -85,26 +86,33 @@ export const updateExpense = async (req: Request, res: Response) => {
   try {
     const { expenseId, status } = req.body;
 
-    const updated = await Expense.findByIdAndUpdate(
-      expenseId,
-      { status },
-      { new: true }
-    ).populate("userId", "name email");
+    const updated = await updateExpenseStatus({ expenseId, status });
 
-    if (!updated) {
-      return res.status(404).json({
-        status: "failed",
-        message: "Expense not found",
-      });
-    }
-
-    return res.status(201).json({
+    return res.status(200).json({
       status: "success",
       message: "Updated expense",
       data: updated,
     });
   } catch (err: any) {
     return res.status(406).json({
+      status: "failed",
+      message: `err.name: ${err.name}, err.message: ${err.message}`,
+    });
+  }
+};
+
+export const getAnalytics = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const user = (req as AuthedRequest).user;
+    const analytics = await getAnalyticsService(user?._id, user?.role === "admin");
+
+    return res.status(200).json({
+      status: "success",
+      message: "Fetched analytics successfully",
+      data: analytics,
+    });
+  } catch (err: any) {
+    return res.status(500).json({
       status: "failed",
       message: `err.name: ${err.name}, err.message: ${err.message}`,
     });

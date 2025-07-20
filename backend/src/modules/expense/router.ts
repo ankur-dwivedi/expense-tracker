@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createExpense, getExpense, updateExpense } from "./controller";
+import { createExpense, getAnalytics, getExpense, updateExpense } from "./controller";
 const { validate } = require("../../middlewares/schema");
 const {
   createExpenseContract,
@@ -29,5 +29,7 @@ expense.patch(
   validate("body", updateExpenseContract),
   updateExpense
 );
+
+expense.get("/analytics", withAuthUser, getAnalytics);
 
 export default expense;

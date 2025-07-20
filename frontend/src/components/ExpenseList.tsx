@@ -22,42 +22,48 @@ import AppTheme from "./helper/AppTheme";
 import Header from "./Header";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../redux/store";
-import { fetchExpensesThunk } from "../redux/expense/expenseThunks";
+import {
+  fetchExpensesThunk,
+  updateExpenseStatusThunk,
+} from "../redux/expense/expenseThunks";
 import dayjs, { Dayjs } from "dayjs";
 import StatusUpdateModal from "./StatusUpdateModal";
-import { updateExpenseStatusThunk } from "../redux/expense/expenseThunks";
 
 const categories = ["All", "Food", "Travel", "Bills", "Shopping"];
+const statuses = ["All", "approved", "pending", "rejected"];
 
 const ExpenseList: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const {
-    expenses: expenses,
-    loading,
-    error,
-  } = useSelector((state: RootState) => state.expenses);
+  const { expenses, meta, loading, error } = useSelector(
+    (state: RootState) => state.expenses
+  );
+
   const user = useSelector((state: RootState) => state.auth.user);
+
   const [selectedExpenseId, setSelectedExpenseId] = useState<string | null>(
     null
   );
   const [selectedStatus, setSelectedStatus] = useState<string>("");
+
   const [category, setCategory] = useState<string>("All");
+  const [status, setStatus] = useState<string>("All");
   const [date, setDate] = useState<Dayjs | null>(null);
   const [page, setPage] = useState(1);
   const pageSize = 10;
+
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     dispatch(
       fetchExpensesThunk({
         category: category !== "All" ? category : undefined,
+        status: status !== "All" ? status : undefined,
         date: date?.toISOString(),
+        page,
+        limit: pageSize,
       })
     );
-  }, [category, date, dispatch]);
-
-  const paginated = expenses.slice((page - 1) * pageSize, page * pageSize);
-
-  const [modalOpen, setModalOpen] = useState(false);
+  }, [category, status, date, page, dispatch]);
 
   const handleStatusClick = (id: string, status: string) => {
     setSelectedExpenseId(id);
@@ -93,12 +99,15 @@ const ExpenseList: React.FC = () => {
             flexWrap="wrap"
             justifyContent="center"
           >
-            <FormControl sx={{ minWidth: 200, minHeight: 5 }}>
+            <FormControl sx={{ minWidth: 200 }}>
               <InputLabel>Filter by category</InputLabel>
               <Select
                 value={category}
                 label="Filter by category"
-                onChange={(e) => setCategory(e.target.value)}
+                onChange={(e) => {
+                  setCategory(e.target.value);
+                  setPage(1);
+                }}
                 style={{
                   width: "100%",
                   height: "100%",
@@ -113,10 +122,36 @@ const ExpenseList: React.FC = () => {
               </Select>
             </FormControl>
 
+            <FormControl sx={{ minWidth: 200 }}>
+              <InputLabel>Filter by status</InputLabel>
+              <Select
+                value={status}
+                label="Filter by status"
+                onChange={(e) => {
+                  setStatus(e.target.value);
+                  setPage(1);
+                }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  backgroundColor: "#00000000",
+                }}
+              >
+                {statuses.map((stat) => (
+                  <MenuItem key={stat} value={stat}>
+                    {stat.charAt(0).toUpperCase() + stat.slice(1)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
             <DatePicker
               label="Filter by Date"
               value={date}
-              onChange={(newDate) => setDate(newDate)}
+              onChange={(newDate) => {
+                setDate(newDate);
+                setPage(1);
+              }}
             />
           </Box>
 
@@ -139,8 +174,8 @@ const ExpenseList: React.FC = () => {
                       Loading...
                     </TableCell>
                   </TableRow>
-                ) : paginated.length > 0 ? (
-                  paginated.map((expense) => (
+                ) : expenses.length > 0 ? (
+                  expenses.map((expense) => (
                     <TableRow key={expense._id}>
                       <TableCell>
                         {dayjs(expense.date).format("YYYY-MM-DD")}
@@ -195,7 +230,7 @@ const ExpenseList: React.FC = () => {
 
             <Box mt={3} display="flex" justifyContent="center">
               <Pagination
-                count={Math.ceil(expenses.length / pageSize)}
+                count={Math.ceil((meta?.total || 0) / pageSize)}
                 page={page}
                 onChange={(_, val) => setPage(val)}
                 color="primary"
@@ -203,6 +238,7 @@ const ExpenseList: React.FC = () => {
             </Box>
           </Card>
         </Box>
+
         <StatusUpdateModal
           open={modalOpen}
           onClose={() => setModalOpen(false)}

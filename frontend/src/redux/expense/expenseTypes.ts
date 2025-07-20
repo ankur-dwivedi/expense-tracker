@@ -13,6 +13,10 @@ export interface Expense {
 
 export interface ExpenseState {
   expenses: Expense[];
+  meta: { total: number; page: number };
+  analytics: Record<string, number>;
   loading: boolean;
   error: string | null;
+  analyticsLoading: boolean;
+  analyticsError: string | null;
 }

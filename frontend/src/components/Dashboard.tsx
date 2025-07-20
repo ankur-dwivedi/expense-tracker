@@ -12,28 +12,20 @@ import {
 import AppTheme from "./helper/AppTheme";
 import Header from "./Header";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchExpensesThunk } from "../redux/expense/expenseThunks";
+import { fetchAnalyticsThunk } from "../redux/expense/expenseThunks";
 import { AppDispatch, RootState } from "../redux/store";
 
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { expenses, loading, error } = useSelector(
+  const { analytics, analyticsLoading, analyticsError } = useSelector(
     (state: RootState) => state.expenses
   );
 
   useEffect(() => {
-    dispatch(fetchExpensesThunk({}));
+    dispatch(fetchAnalyticsThunk());
   }, [dispatch]);
 
-  const expenseSummary = expenses.reduce<Record<string, number>>(
-    (acc, curr) => {
-      acc[curr.category] = (acc[curr.category] || 0) + curr.amount;
-      return acc;
-    },
-    {}
-  );
-
-  const chartData = Object.entries(expenseSummary).map(([category, total]) => ({
+  const chartData = Object.entries(analytics).map(([category, total]) => ({
     category,
     total,
   }));
@@ -56,17 +48,17 @@ const Dashboard: React.FC = () => {
             <Typography variant="h5" gutterBottom>
               Expenses by Category
             </Typography>
-            {loading ? (
+            {analyticsLoading ? (
               <Box display="flex" justifyContent="center" mt={4}>
                 <CircularProgress />
               </Box>
-            ) : error ? (
+            ) : analyticsError ? (
               <Typography color="error" textAlign="center">
-                {error}
+                {analyticsError}
               </Typography>
-            ) : expenses.length === 0 ? (
+            ) : chartData.length === 0 ? (
               <Typography textAlign="center" mt={4}>
-                No expenses found.
+                No analytics data found.
               </Typography>
             ) : (
               <Box height={400}>
