@@ -88,7 +88,7 @@ const ExpenseList: React.FC = () => {
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Header />
         <Box sx={{ minHeight: "100vh", px: 2, py: 6 }}>
-          <Typography variant="h4" gutterBottom textAlign="center">
+          <Typography variant="h4" mb={4} gutterBottom textAlign="center">
             Expense List
           </Typography>
 

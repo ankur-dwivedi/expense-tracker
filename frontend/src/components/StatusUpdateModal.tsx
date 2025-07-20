@@ -25,13 +25,13 @@ const StatusUpdateModal: React.FC<Props> = ({
   currentStatus,
 }) => {
   const [status, setStatus] = useState(currentStatus);
-  
+
   useEffect(() => {
     setStatus(currentStatus);
   }, [currentStatus]);
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
       <DialogTitle>Update Status</DialogTitle>
       <DialogContent>
         <FormControl fullWidth sx={{ mt: 1 }}>
