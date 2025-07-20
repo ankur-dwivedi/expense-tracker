@@ -31,7 +31,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd expense-tracking
+            cd expense-tracker
             git pull origin main
             cd frontend
             docker pull ankurdwivedi/expensetracker-frontend
