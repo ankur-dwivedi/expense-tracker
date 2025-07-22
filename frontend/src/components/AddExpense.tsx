@@ -12,7 +12,7 @@ import { styled } from "@mui/material/styles";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
 import AppTheme from "./helper/AppTheme";
 import Header from "./Header";
 import { useDispatch, useSelector } from "react-redux";
@@ -49,6 +49,7 @@ export default function AddExpenseForm() {
     description: "",
     date: "",
   });
+
   const dispatch = useDispatch<AppDispatch>();
 
   const validate = () => {
@@ -94,14 +95,13 @@ export default function AddExpenseForm() {
     try {
       await dispatch(createExpenseThunk(data)).unwrap();
 
-      // On success
       setAmount("");
       setCategory("");
       setDescription("");
       setDate(null);
       setShowSuccess(true);
       setErrors({ amount: "", category: "", description: "", date: "" });
-    } catch (error: any) {
+    } catch (error: unknown) {
       setErrors((prev) => ({
         ...prev,
         date: typeof error === "string" ? error : "Something went wrong.",
@@ -146,17 +146,6 @@ export default function AddExpenseForm() {
                   required
                 />
               </FormControl>
-              {/* <FormControl>
-                <FormLabel>Category</FormLabel>
-                <TextField
-                  name="category"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  error={!!errors.category}
-                  helperText={errors.category}
-                  required
-                />
-              </FormControl> */}
               <FormControl required error={!!errors.category}>
                 <FormLabel>Category</FormLabel>
                 <Select
