@@ -31,7 +31,7 @@ MONGO_URL=mongodb://mongodb:27017/expensetracker?authSource=admin
 3. Start the backend and MongoDB using Docker Compose:
 
 ```bash
-docker compose up
+docker compose  -f docker-compose.dev.yaml up
 ```
 
 This command spins up:
@@ -64,7 +64,7 @@ REACT_APP_API_URL=http://localhost:4000/api
 3. Start the development server using Docker Compose:
 
 ```bash
-docker compose -f docker-compose.dev.yml up
+docker compose -f docker-compose.dev.yaml up
 ```
 
 🔗 The frontend will be available at: http://localhost:3000
