@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { create, get } from "../../models/user/services";
-import { generateError } from "../../utils/error";
+import { generateError, handleErrorResponse } from "../../utils/error";
 import { generateAccessToken } from "../../utils/general";
 import { UserDocument } from "../../models/user/types";
 
@@ -45,8 +45,8 @@ export const auth = async (
         accessToken: generateAccessToken(user._id),
       },
     });
-  } catch (err: any) {
-    res.status(400).send({ message: err.message });
+  } catch (err: unknown) {
+    return handleErrorResponse(res, 500, err);
   }
 };
 
@@ -65,7 +65,7 @@ export const createUser = async (
       status: 200,
       success: true,
     });
-  } catch (err: any) {
-    res.status(400).send({ message: err.message });
+  } catch (err: unknown) {
+    return handleErrorResponse(res, 500, err);
   }
 };

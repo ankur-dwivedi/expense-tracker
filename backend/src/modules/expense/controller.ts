@@ -6,6 +6,7 @@ import {
   getAnalyticsService,
 } from "../../models/expense/services";
 import { AuthedRequest } from "../../models/user/types";
+import { handleErrorResponse } from "../../utils/error";
 
 export const createExpense = async (
   req: Request,
@@ -18,10 +19,15 @@ export const createExpense = async (
       status: "success",
       message: "Successfully created an expense",
     });
-  } catch (err: any) {
-    return res.status(406).json({
+  } catch (err: unknown) {
+    const { name, message } =
+      err instanceof Error
+        ? err
+        : { name: "UnknownError", message: "An unknown error occurred." };
+
+    return res.status(500).json({
       status: "failed",
-      message: `err.name : ${err.name}, err.message:${err.message}`,
+      message: `err.name: ${name}, err.message: ${message}`,
     });
   }
 };
@@ -70,11 +76,8 @@ export const getExpense = async (
         totalPages: Math.ceil(totalCount / limitNum),
       },
     });
-  } catch (err: any) {
-    return res.status(500).json({
-      status: "failed",
-      message: `err.name: ${err.name}, err.message: ${err.message}`,
-    });
+  } catch (err: unknown) {
+    return handleErrorResponse(res, 500, err);
   }
 };
 
@@ -89,28 +92,28 @@ export const updateExpense = async (req: Request, res: Response) => {
       message: "Updated expense",
       data: updated,
     });
-  } catch (err: any) {
-    return res.status(406).json({
-      status: "failed",
-      message: `err.name: ${err.name}, err.message: ${err.message}`,
-    });
+  } catch (err: unknown) {
+    return handleErrorResponse(res, 500, err);
   }
 };
 
-export const getAnalytics = async (req: Request, res: Response): Promise<Response> => {
+export const getAnalytics = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   try {
     const user = (req as AuthedRequest).user;
-    const analytics = await getAnalyticsService(user?._id, user?.role === "admin");
+    const analytics = await getAnalyticsService(
+      user?._id,
+      user?.role === "admin"
+    );
 
     return res.status(200).json({
       status: "success",
       message: "Fetched analytics successfully",
       data: analytics,
     });
-  } catch (err: any) {
-    return res.status(500).json({
-      status: "failed",
-      message: `err.name: ${err.name}, err.message: ${err.message}`,
-    });
+  } catch (err: unknown) {
+    return handleErrorResponse(res, 500, err);
   }
 };

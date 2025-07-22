@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { expressjwt } from "express-jwt";
 import User from "../../models/user";
 import { createUnauthorizedError } from "../../utils/general";
+import { UserDocument } from "../../models/user/types";
 
 interface AuthenticatedRequest extends Request {
   user?: any;
@@ -35,7 +36,7 @@ export const requireAdmin = (
   res: Response,
   next: NextFunction
 ) => {
-  const user = (req as any).user;
+  const user = req.user as UserDocument;
 
   if (!user || user.role !== "admin") {
     return res
