@@ -14,7 +14,6 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy only the compiled JavaScript and necessary files from the builder stage
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json

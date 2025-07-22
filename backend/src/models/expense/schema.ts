@@ -23,6 +23,4 @@ const ExpenseSchema = new Schema(
   { timestamps: true }
 );
 
-// ExpenseSchema.index({ emailAddress: 1, jobId: 1 }, { unique: true });
-
 export default ExpenseSchema;

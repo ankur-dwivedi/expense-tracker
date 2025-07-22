@@ -1,17 +1,6 @@
-import mongoose, { Model, Document } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import ExpenseSchema from './schema';
-import { STATUS_ENUM } from './constants';
-
-export interface ExpenseDocument extends Document{
-  amount: number;
-  category: string;
-  description: string;
-  date: string;
-  userId: string;
-  status: (typeof STATUS_ENUM)[number];
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+import { ExpenseDocument } from './types';
 
 const Expense: Model<ExpenseDocument> =
   mongoose.models.expense as Model<ExpenseDocument> ||

@@ -1,25 +1,14 @@
-import Expense, { ExpenseDocument } from ".";
-import { STATUS_ENUM } from "./constants";
+import Expense from ".";
 import { generateError } from "../../utils/error";
-
-interface Query {
-  userId?: string;
-  date?: string;
-  category?: string;
-  status?: (typeof STATUS_ENUM)[number];
-}
-
-interface UpdateData {
-  status: (typeof STATUS_ENUM)[number];
-  expenseId: string;
-}
+import { ExpenseDocument, UpdateData } from "./types";
+import { FilterQuery } from "mongoose";
 
 export const create = async (expenseData: ExpenseDocument) => {
   return Expense.create({ ...expenseData });
 };
 
 export const get = async (
-  query: any,
+  query: FilterQuery<ExpenseDocument>,
   pageNum: number,
   limitNum: number,
   isAdmin = false
@@ -49,12 +38,6 @@ export const get = async (
   };
 };
 
-export const updateExpense = async (data: UpdateData) => {
-  return Expense.findOne({ _id: data.expenseId })
-    .then((response) => (response ? response : generateError()))
-    .catch((error) => error);
-};
-
 export const updateExpenseStatus = async (
   data: UpdateData
 ): Promise<ExpenseDocument> => {
@@ -72,7 +55,7 @@ export const updateExpenseStatus = async (
 };
 
 export const getAnalyticsService = async (userId?: string, isAdmin = false) => {
-  const matchQuery: any = { status: "approved" };
+  const matchQuery: FilterQuery<ExpenseDocument> = { status: "approved" };
 
   if (!isAdmin && userId) {
     matchQuery.userId = userId;

@@ -5,11 +5,7 @@ import {
   updateExpenseStatus,
   getAnalyticsService,
 } from "../../models/expense/services";
-import { UserDocument } from "../../models/user";
-
-interface AuthedRequest extends Request {
-  user?: UserDocument;
-}
+import { AuthedRequest } from "../../models/user/types";
 
 export const createExpense = async (
   req: Request,

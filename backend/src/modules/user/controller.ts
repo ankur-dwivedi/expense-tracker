@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import { create, get } from "../../models/user/services";
 import { generateError } from "../../utils/error";
 import { generateAccessToken } from "../../utils/general";
-import { UserDocument } from "../../models/user";
+import { UserDocument } from "../../models/user/types";
 
 export const auth = async (
   req: Request,

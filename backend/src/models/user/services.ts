@@ -1,13 +1,11 @@
 import bcrypt from "bcrypt";
 
 import { generateError } from "../../utils/error";
-import User, { UserDocument } from ".";
+import User from ".";
+import { UserDocument } from "./types";
+import { FilterQuery } from "mongoose";
 
-interface Query {
-  email: string;
-}
-
-export const get = async (query: Query) => {
+export const get = async (query: FilterQuery<UserDocument>) => {
   return User.findOne({ email: query.email })
     .then((res) => res || generateError())
     .catch((err) => err);
@@ -28,7 +26,10 @@ export const passwordCompare = async (
   try {
     const match = await bcrypt.compare(password, storedPassword);
     return match;
-  } catch (err: any) {
-    return { errName: err.name, errMessage: err.message };
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return { errName: err.name, errMessage: err.message };
+    }
+    return generateError();
   }
 };

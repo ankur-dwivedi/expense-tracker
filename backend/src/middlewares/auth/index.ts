@@ -5,8 +5,6 @@ import { createUnauthorizedError } from "../../utils/general";
 
 interface AuthenticatedRequest extends Request {
   user?: any;
-  template?: any;
-  level?: any;
 }
 
 const verifyAccessToken = expressjwt({
