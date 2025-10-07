@@ -1,26 +1,25 @@
 # Stage 1: Build React App
-FROM node:20 AS builder
+FROM node:20 AS build
 
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci --legacy-peer-deps
+
+RUN npm install
 
 COPY . .
+
+ARG REACT_APP_API_URL
+
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
+
 RUN npm run build
 
+FROM nginx:stable-alpine
 
-# Stage 2: Serve App using a lightweight image
-FROM node:20-alpine
+COPY --from=build /app/build /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-WORKDIR /app
+EXPOSE 80
 
-# Install `serve` to serve the built React files
-RUN npm install -g serve
-
-# Copy build output from previous stage
-COPY --from=builder /app/build ./build
-
-EXPOSE 3000
-
-CMD ["serve", "-s", "build", "-l", "3000"]
+CMD [ "nginx","-g","daemon off;" ]

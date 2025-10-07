@@ -21,17 +21,31 @@ This is a full-stack Expense Tracker application built with **React**, **Node.js
 cd backend
 ```
 
-2. Create a .env file in the backend directory with the following content:
+2. Create a .env.backend file in the root directory with the following content:
 
 ```bash
 ACCESS_TOKEN_SECRET=access$$$$@@@@------token$$$$@@@@------secret
 MONGO_URL=mongodb://mongodb:27017/expensetracker?authSource=admin
 ```
 
-3. Start the backend and MongoDB using Docker Compose:
+2️⃣ Frontend Setup
+
+1. Navigate to the frontend folder:
 
 ```bash
-docker compose  -f docker-compose.dev.yaml up
+cd frontend
+```
+
+2. Create a .env.frontend file in the root directory with the following content:
+
+```bash
+REACT_APP_API_URL=http://localhost:4000/api
+```
+
+3. Start the development server using Docker Compose:
+
+```bash
+docker compose -f docker-compose.dev.yaml up
 ```
 
 This command spins up:
@@ -47,29 +61,7 @@ This command spins up:
 
 * Expenses: http://localhost:4000/api/expense
 
-2️⃣ Frontend Setup
-
-1. Navigate to the frontend folder:
-
-```bash
-cd frontend
-```
-
-2. Create a .env file in the backend directory with the following content:
-
-```bash
-REACT_APP_API_URL=http://localhost:4000/api
-```
-
-3. Start the development server using Docker Compose:
-
-```bash
-docker compose -f docker-compose.dev.yaml up
-```
-
 🔗 The frontend will be available at: http://localhost:3000
-
-Make sure the backend is already running before you use the frontend.
 
 🧰 Tech Stack
 

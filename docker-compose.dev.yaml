@@ -1,0 +1,40 @@
+version: "3.8"
+services:
+    mongodb:
+        image: 'mongo'
+        container_name: mymongodb
+        ports:
+          - '27017:27017'
+        volumes: 
+            - data:/data/db
+
+    backend:
+        build:
+            context: ./backend
+            dockerfile: Dockerfile.dev
+        container_name: mybackend
+        ports:
+            - '4000:4000'
+        volumes:
+            - ./backend:/app    
+            - /app/node_modules 
+        env_file:
+             - ./.env.backend
+        depends_on:
+            - mongodb
+    react-dev:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile.dev
+        container_name: myfrontend
+        ports:
+            - "3000:3000" # Host:Container
+        volumes:
+            - ./frontend:/app        # Mount current dir to container
+            - /app/node_modules # Prevent overwriting node_modules
+        stdin_open: true
+        tty: true
+        depends_on:
+            - backend
+volumes:
+    data:
