@@ -89,3 +89,4 @@ DevOps
 * Make sure Docker is installed and running on your machine.
 * The backend and MongoDB are containerized.
 * The frontend uses the backend at http://localhost:4000.
+* 
